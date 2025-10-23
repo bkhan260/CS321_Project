@@ -30,4 +30,5 @@ This is a match three game focused on aquatic life, the user will be able to pla
   - User can use a limited number of hints to find potential matches.
 
 ## Storyboard
+[FigJam Board](https://www.figma.com/board/ZhOPx1p9xpauzA8R2RfQUr/Untitled?node-id=0-1&t=gYrX3un8fQwMBlkS-1)
 ![Storyboard Photo](https://github.com/bkhan260/CS321_Project/blob/main/StoryboardV0.png)
