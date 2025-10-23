@@ -1,0 +1,66 @@
+[gd_scene load_steps=2 format=3 uid="uid://tksed8cep5qo"]
+
+[sub_resource type="GDScript" id="GDScript_lw2xu"]
+resource_name = "LevelSelectScreen"
+script/source = "class_name LevelSelect extends Control
+
+enum DIFFICULTY {EASY, MEDIUM, HARD}
+
+func _on_easy_button_pressed() -> void: _start_game(DIFFICULTY.EASY)
+func _on_medium_button_pressed() -> void: _start_game(DIFFICULTY.MEDIUM)
+func _on_hard_button_pressed() -> void: _start_game(DIFFICULTY.HARD)
+
+func _start_game(difficulty : DIFFICULTY = DIFFICULTY.MEDIUM) -> void:
+	var game_scene : Node = load(\"res://Scenes/GameBoardScene.tscn\").instantiate()
+	assert(game_scene.has_method(\"set_difficulty\")) ## so I dont forget to impliment
+	game_scene.set_difficulty(difficulty)
+	get_tree().root.add_child(game_scene)
+	get_tree().current_scene.queue_free()
+	get_tree().current_scene = game_scene
+"
+
+[node name="LevelSelectScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_lw2xu")
+
+[node name="EasyButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.3
+anchor_right = 0.4
+anchor_bottom = 0.485
+grow_horizontal = 2
+grow_vertical = 2
+text = "Easy"
+
+[node name="MediumButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.513
+anchor_right = 0.4
+anchor_bottom = 0.688
+grow_horizontal = 2
+grow_vertical = 2
+text = "Medium"
+
+[node name="HardButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.713
+anchor_right = 0.4
+anchor_bottom = 0.888
+grow_horizontal = 2
+grow_vertical = 2
+text = "Hard"
+
+[connection signal="pressed" from="EasyButton" to="." method="_on_easy_button_pressed"]
+[connection signal="pressed" from="MediumButton" to="." method="_on_medium_button_pressed"]
+[connection signal="pressed" from="HardButton" to="." method="_on_hard_button_pressed"]
