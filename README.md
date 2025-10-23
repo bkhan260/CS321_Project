@@ -10,7 +10,7 @@ This is a match three game focused on aquatic life, the user will be able to pla
 - **Frontend:** Godot 4.5.2
 - **Backend:** Godot 4.5.2 - GDscript & C#
 
-# Features
+## Features
 - Play/Pause/Quit
   - Users can stop in the middle of the game, and resume at any time, user can also quit at any point in the game
 - Board interactions
@@ -28,3 +28,6 @@ This is a match three game focused on aquatic life, the user will be able to pla
   - User is able to generate a level with a completely random tile placement
 - Hint function
   - User can use a limited number of hints to find potential matches.
+
+## Storyboard
+[Storyboard Photo](https://github.com/bkhan260/CS321_Project/blob/main/StoryboardV0.png)
