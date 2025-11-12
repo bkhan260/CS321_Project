@@ -1,0 +1,82 @@
+[gd_scene load_steps=6 format=3 uid="uid://bmwwquv5462ej"]
+
+[ext_resource type="Texture2D" uid="uid://306naxa3gmi2" path="res://Sprites/Ellipse.png" id="1_5b0ew"]
+[ext_resource type="Texture2D" uid="uid://l24qm56tnc5l" path="res://Sprites/Polygon.png" id="2_6572y"]
+[ext_resource type="Texture2D" uid="uid://dks61kgewxaon" path="res://Sprites/Rectangle.png" id="3_npdx3"]
+[ext_resource type="Texture2D" uid="uid://7ekco37mhgco" path="res://Sprites/Triangle.png" id="4_ak7mi"]
+
+[sub_resource type="GDScript" id="GDScript_6572y"]
+resource_name = "BoardItem"
+script/source = "class_name BoardItem extends Control
+
+enum ITEM_TYPE {TRIANGLE, RECTANGLE, POLYGON, ELLIPSE}
+
+## The type of item that this object represents.
+## Setting this variable changes the objects sprite to the respective image.
+@export var item_type : ITEM_TYPE = ITEM_TYPE.TRIANGLE:
+	set(val):
+		assert(val is ITEM_TYPE, \"passed value was not an ITEM_TYPE\")
+		for child in self.get_children():
+			if child is TextureRect: child.visible = false # Hide all sprites.
+		
+		# Enable relative sprite
+		match val:
+			ITEM_TYPE.TRIANGLE: $Triangle.visible = true
+			ITEM_TYPE.RECTANGLE: $Rectangle.visible = true
+			ITEM_TYPE.POLYGON: $Polygon.visible = true
+			ITEM_TYPE.ELLIPSE: $Ellipse.visible = true
+			_: assert(false, \"How did you even get here.\")
+"
+
+[node name="BoardItem" type="Control"]
+clip_contents = true
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 200.0
+script = SubResource("GDScript_6572y")
+
+[node name="Ellipse" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_5b0ew")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Polygon" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_6572y")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Rectangle" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_npdx3")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Triangle" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_ak7mi")
+expand_mode = 3
+stretch_mode = 5
