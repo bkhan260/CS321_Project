@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://gegx8ittdpwf"]
+[gd_scene load_steps=5 format=3 uid="uid://gegx8ittdpwf"]
 
 [ext_resource type="Script" uid="uid://lm3gay1sdn6t" path="res://Scripts/turn_counter.gd" id="1_v1nyn"]
 [ext_resource type="Script" uid="uid://docqhcorp7egt" path="res://Scripts/level_generator.gd" id="2_dwf3a"]
-[ext_resource type="PackedScene" uid="uid://bmwwquv5462ej" path="res://Scenes/board_item.tscn" id="3_3l6q7"]
 
 [sub_resource type="GDScript" id="GDScript_xkp15"]
 resource_name = "GameBoardScene"
@@ -81,7 +80,8 @@ anchor_right = 0.7
 anchor_bottom = 0.85
 text = "Quit to Menu"
 
-[node name="GridContainer" type="GridContainer" parent="."]
+[node name="ItemGrid" type="GridContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.1
@@ -90,42 +90,6 @@ anchor_right = 0.7
 anchor_bottom = 0.9
 grow_vertical = 2
 columns = 6
-
-[node name="BoardItem" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 2
-
-[node name="BoardItem2" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 3
-
-[node name="BoardItem3" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 2
-
-[node name="BoardItem4" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 3
-
-[node name="BoardItem5" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 3
-
-[node name="BoardItem6" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 1
-
-[node name="BoardItem7" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 3
-
-[node name="BoardItem8" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 3
-
-[node name="BoardItem9" parent="GridContainer" instance=ExtResource("3_3l6q7")]
-layout_mode = 2
-item_type = 3
 
 [connection signal="pressed" from="PauseMenu/ResumeButton" to="PauseMenu" method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PauseMenu/OptionsButton" to="PauseMenu" method="_on_options_button_pressed"]
