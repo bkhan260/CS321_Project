@@ -17,3 +17,7 @@ enum ITEM_TYPE {TRIANGLE, RECTANGLE, POLYGON, ELLIPSE}
 			ITEM_TYPE.POLYGON: $Polygon.visible = true
 			ITEM_TYPE.ELLIPSE: $Ellipse.visible = true
 			_: assert(false, "How did you even get here.")
+		
+		item_type = val
+
+var pos : Vector2i = Vector2i(-1, -1)

@@ -12,5 +12,5 @@ func _ready() -> void:
 		for column : int in range(0, desired_columns):
 			var new_item : BoardItem = item_blueprint.instantiate()
 			new_item.item_type = randi_range(0,3)
-			
+			new_item.pos = Vector2i(column, row)
 			item_grid.add_child(new_item, true)

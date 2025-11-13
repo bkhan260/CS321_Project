@@ -12,6 +12,31 @@ enum DIFFICULTY {EASY, MEDIUM, HARD} # Must match LevelSelect.gd DIFFICULTY enum
 
 func set_difficulty(diff : DIFFICULTY) -> void:
 	print(diff)
+
+var is_mouse_down : bool = false
+var first_item : BoardItem = null
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.is_pressed():
+				var item = get_viewport().gui_get_hovered_control()
+				if item is BoardItem:
+					first_item = item
+					is_mouse_down = true
+			else:
+				if first_item != null: ## IF ITEM is next to tile were releasing on, then swap() else: dont swap
+					var new_item = get_viewport().gui_get_hovered_control()
+					if new_item is BoardItem and first_item.pos.distance_to(new_item.pos) == 1.0: ## The distance should only be 1. if > 1 it was too far.
+						
+						## TODO: IF swap is possible, check its validity, then swap & clear valid matches.
+						
+						var temp : BoardItem.ITEM_TYPE = first_item.item_type ## Swap the two items.
+						first_item.item_type = new_item.item_type
+						new_item.item_type = temp
+				
+				is_mouse_down = false ## Button_Left was NOT pressed. (or released)
+				first_item = null
 "
 
 [sub_resource type="GDScript" id="GDScript_dwf3a"]
@@ -26,6 +51,7 @@ func _on_quit_button_pressed() -> void: get_tree().change_scene_to_file(\"res://
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed() and event.keycode == Key.KEY_ESCAPE:
 		self.visible = not self.visible
+		self.mouse_filter = Control.MOUSE_FILTER_PASS if self.visible else Control.MOUSE_FILTER_IGNORE
 "
 
 [node name="GameScene" type="Control"]
@@ -35,6 +61,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 script = SubResource("GDScript_xkp15")
 
 [node name="TurnController" type="Node" parent="."]
@@ -51,6 +78,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = SubResource("GDScript_dwf3a")
 
 [node name="ResumeButton" type="Button" parent="PauseMenu"]
