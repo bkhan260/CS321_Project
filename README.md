@@ -48,5 +48,5 @@ This is a match three game focused on aquatic life, the user will be able to pla
    - Data representation of an item on the board
    - Stores Positon & Item type data
    - Can be mutated durring runtime
- - MainMenu (MainMenuScene.tscn)[https://github.com/bkhan260/CS321_Project/blob/main/Scenes/MainMenuScene.tscn] <- Another "built-in" script (To emphasise we wrote the code, its just 'built-in' to the scene file itself instead of its own seperate file)
+ - MainMenu [MainMenuScene.tscn](https://github.com/bkhan260/CS321_Project/blob/main/Scenes/MainMenuScene.tscn) <- Another "built-in" script (To emphasise we wrote the code, its just 'built-in' to the scene file itself instead of its own seperate file)
      - File Loading to display the current high score (Persistent through multiple runs)
