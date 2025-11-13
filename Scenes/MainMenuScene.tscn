@@ -10,6 +10,18 @@ func _on_play_button_pressed() -> void:
 
 func _on_quit_button_pressed() -> void:
 	get_tree().quit()
+
+func _ready() -> void:
+	get_highscore()
+
+
+func get_highscore() -> void:
+	if not FileAccess.file_exists(\"user://highscore.save\"): return
+	
+	var file : FileAccess = FileAccess.open(\"user://highscore.save\", FileAccess.READ)
+	var score = file.get_64()
+	file.close()
+	$HighScoreLabel.text = \"Current High Score: [rainbow][wave]%d[/wave][/rainbow]\" % score
 "
 
 [node name="MainMenuScene" type="Control"]
@@ -43,6 +55,14 @@ anchor_right = 0.7
 anchor_bottom = 0.7
 grow_horizontal = 2
 text = "Quit"
+
+[node name="HighScoreLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_right = 343.0
+offset_bottom = 68.0
+theme_override_font_sizes/normal_font_size = 24
+bbcode_enabled = true
+text = "Current High Score: 0"
 
 [connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="QuitButton" to="." method="_on_quit_button_pressed"]

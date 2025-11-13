@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://gegx8ittdpwf"]
+[gd_scene load_steps=6 format=3 uid="uid://gegx8ittdpwf"]
 
 [ext_resource type="Script" uid="uid://lm3gay1sdn6t" path="res://Scripts/turn_counter.gd" id="1_v1nyn"]
 [ext_resource type="Script" uid="uid://docqhcorp7egt" path="res://Scripts/level_generator.gd" id="2_dwf3a"]
+[ext_resource type="Texture2D" uid="uid://bc2ymhf6a3kkc" path="res://Sprites/UIRectangle.png" id="3_3l6q7"]
 
 [sub_resource type="GDScript" id="GDScript_xkp15"]
 resource_name = "GameBoardScene"
@@ -9,6 +10,13 @@ script/source = "extends Control
 
 enum DIFFICULTY {EASY, MEDIUM, HARD} # Must match LevelSelect.gd DIFFICULTY enum exactly to function properly...
 # And yes I know its bad programming to have the same thing in two places, I just dont care.
+
+@onready var score_label: RichTextLabel = $ScoreBox/ScoreLabel
+@onready var turn_label: RichTextLabel = $TurnBox/TurnLabel
+@onready var hint_label: RichTextLabel = $HintBox/HintLabel
+
+var score : int = 0
+var turns : int = 10
 
 func set_difficulty(diff : DIFFICULTY) -> void:
 	print(diff)
@@ -34,9 +42,25 @@ func _input(event: InputEvent) -> void:
 						var temp : BoardItem.ITEM_TYPE = first_item.item_type ## Swap the two items.
 						first_item.item_type = new_item.item_type
 						new_item.item_type = temp
+						
+						## TODO ASSUMING Swap was VALID, then take a turn away + Increase score
+						score += 10
+						turns -= 1
+						
+						if turns <= 0:
+							save_score()
+							get_tree().change_scene_to_file(\"res://Scenes/MainMenuScene.tscn\") ## TODO: Game over -> show highscore
+						else:
+							score_label.text = \"SCORE:\\n%d\" % score
+							turn_label.text = \"TURNS REMAINING:\\n%d\" % turns
 				
 				is_mouse_down = false ## Button_Left was NOT pressed. (or released)
 				first_item = null
+
+func save_score() -> void:
+	var file : FileAccess = FileAccess.open(\"user://highscore.save\", FileAccess.WRITE)
+	file.store_64(score)
+	file.close()
 "
 
 [sub_resource type="GDScript" id="GDScript_dwf3a"]
@@ -108,6 +132,16 @@ anchor_right = 0.7
 anchor_bottom = 0.85
 text = "Quit to Menu"
 
+[node name="BoardBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.7
+anchor_bottom = 0.9
+mouse_filter = 2
+color = Color(0.24840015, 0.24840018, 0.24840015, 1)
+
 [node name="ItemGrid" type="GridContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
@@ -118,6 +152,64 @@ anchor_right = 0.7
 anchor_bottom = 0.9
 grow_vertical = 2
 columns = 6
+
+[node name="ScoreBox" type="Sprite2D" parent="."]
+position = Vector2(825, -12)
+texture = ExtResource("3_3l6q7")
+centered = false
+
+[node name="ScoreLabel" type="RichTextLabel" parent="ScoreBox"]
+custom_minimum_size = Vector2(100, 100)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -16.0
+offset_bottom = -31.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "SCORE
+2"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TurnBox" type="Sprite2D" parent="."]
+position = Vector2(825, 194)
+texture = ExtResource("3_3l6q7")
+centered = false
+
+[node name="TurnLabel" type="RichTextLabel" parent="TurnBox"]
+custom_minimum_size = Vector2(100, 100)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -1.0
+offset_right = -16.0
+offset_bottom = -32.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "SWAPS REMAINING:
+10"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintBox" type="Sprite2D" parent="."]
+position = Vector2(825, 398)
+texture = ExtResource("3_3l6q7")
+centered = false
+
+[node name="HintLabel" type="RichTextLabel" parent="HintBox"]
+custom_minimum_size = Vector2(100, 100)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 7.0
+offset_right = -16.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "HINT"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="pressed" from="PauseMenu/ResumeButton" to="PauseMenu" method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PauseMenu/OptionsButton" to="PauseMenu" method="_on_options_button_pressed"]
