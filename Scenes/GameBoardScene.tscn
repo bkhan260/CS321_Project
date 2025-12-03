@@ -11,12 +11,13 @@ script/source = "extends Control
 enum DIFFICULTY {EASY, MEDIUM, HARD} # Must match LevelSelect.gd DIFFICULTY enum exactly to function properly...
 # And yes I know its bad programming to have the same thing in two places, I just dont care.
 
+@onready var turn_controller: TurnController = $TurnController
+
 @onready var score_label: RichTextLabel = $ScoreBox/ScoreLabel
 @onready var turn_label: RichTextLabel = $TurnBox/TurnLabel
 @onready var hint_label: RichTextLabel = $HintBox/HintLabel
 
 var score : int = 0
-var turns : int = 10
 
 func set_difficulty(diff : DIFFICULTY) -> void:
 	print(diff)
@@ -24,38 +25,37 @@ func set_difficulty(diff : DIFFICULTY) -> void:
 var is_mouse_down : bool = false
 var first_item : BoardItem = null
 
+func _ready() -> void:
+	turn_controller.save_score.connect(save_score) ## Connect save score signal to function.
+
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.is_pressed():
-				var item = get_viewport().gui_get_hovered_control()
-				if item is BoardItem:
-					first_item = item
-					is_mouse_down = true
-			else:
-				if first_item != null: ## IF ITEM is next to tile were releasing on, then swap() else: dont swap
-					var new_item = get_viewport().gui_get_hovered_control()
-					if new_item is BoardItem and first_item.pos.distance_to(new_item.pos) == 1.0: ## The distance should only be 1. if > 1 it was too far.
-						
-						## TODO: IF swap is possible, check its validity, then swap & clear valid matches.
-						
-						var temp : BoardItem.ITEM_TYPE = first_item.item_type ## Swap the two items.
-						first_item.item_type = new_item.item_type
-						new_item.item_type = temp
-						
-						## TODO ASSUMING Swap was VALID, then take a turn away + Increase score
-						score += 10
-						turns -= 1
-						
-						if turns <= 0:
-							save_score()
-							get_tree().change_scene_to_file(\"res://Scenes/MainMenuScene.tscn\") ## TODO: Game over -> show highscore
-						else:
-							score_label.text = \"SCORE:\\n%d\" % score
-							turn_label.text = \"TURNS REMAINING:\\n%d\" % turns
-				
-				is_mouse_down = false ## Button_Left was NOT pressed. (or released)
-				first_item = null
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.is_pressed():
+			var item = get_viewport().gui_get_hovered_control()
+			if item is BoardItem:
+				first_item = item
+				is_mouse_down = true
+		else:
+			if first_item != null: ## IF ITEM is next to tile were releasing on, then swap() else: dont swap
+				var new_item = get_viewport().gui_get_hovered_control()
+				if new_item is BoardItem and first_item.pos.distance_to(new_item.pos) == 1.0: ## The distance should only be 1. if > 1 it was too far.
+					
+					## TODO: IF swap is possible, check its validity, then swap & clear valid matches.
+					
+					var temp : BoardItem.ITEM_TYPE = first_item.item_type ## Swap the two items.
+					first_item.item_type = new_item.item_type
+					new_item.item_type = temp
+					
+					## TODO ASSUMING Swap was VALID, then take a turn away + Increase score
+					score += 10
+					turn_controller.finish_turn()
+					
+					
+					score_label.text = \"SCORE:\\n%d\" % score
+					turn_label.text = \"TURNS REMAINING:\\n%d\" % turn_controller.turns_remaining
+			
+			is_mouse_down = false ## Button_Left was NOT pressed. (or released)
+			first_item = null
 
 func save_score() -> void:
 	var file : FileAccess = FileAccess.open(\"user://highscore.save\", FileAccess.WRITE)
