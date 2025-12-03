@@ -42,9 +42,13 @@ func _start_game(difficulty : DIFFICULTY = DIFFICULTY.MEDIUM) -> void:
 	get_tree().current_scene = game_scene
 
 ## Filter events to allow user to return to main menu
-func _input(event: InputEvent) -> void:
+func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed(\"ui_cancel\"):
 		get_tree().change_scene_to_file(\"res://Scenes/MainMenuScene.tscn\")
+
+
+func _on_back_button_pressed() -> void:
+	get_tree().change_scene_to_file(\"res://Scenes/MainMenuScene.tscn\")
 "
 
 [node name="LevelSelectScreen" type="Control"]
@@ -158,6 +162,20 @@ size_flags_vertical = 3
 bbcode_enabled = true
 fit_content = true
 
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.01
+anchor_top = 0.01
+anchor_right = 0.09
+anchor_bottom = 0.101
+offset_left = 0.4800005
+offset_right = -0.20000458
+offset_bottom = -0.44800568
+theme_override_font_sizes/font_size = 32
+text = "←"
+
 [connection signal="pressed" from="VBoxContainer/EasyButton" to="." method="_on_easy_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/MediumButton" to="." method="_on_medium_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/HardButton" to="." method="_on_hard_button_pressed"]
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
