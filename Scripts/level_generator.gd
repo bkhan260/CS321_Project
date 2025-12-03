@@ -14,7 +14,7 @@ func generate_level(difficulty : BoardController.DIFFICULTY = BoardController.DI
 	
 	for row : int in range(0, num_columns):
 		for column : int in range(0, num_columns):
-			var new_item : BoardItem = item_blueprint.instantiate()
+			var new_item : BoardItem = item_blueprint.instantiate()# this is test
 			new_item.item_type = randi_range(0, num_items) as BoardItem.ITEM_TYPE
 			new_item.pos = Vector2i(column, row)
 			item_grid.add_child(new_item, true)

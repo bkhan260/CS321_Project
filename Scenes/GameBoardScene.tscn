@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bb0gyissto36d" path="res://Scripts/BoardController.gd" id="1_mtww1"]
 [ext_resource type="Script" uid="uid://lm3gay1sdn6t" path="res://Scripts/turn_counter.gd" id="1_v1nyn"]
 [ext_resource type="Script" uid="uid://docqhcorp7egt" path="res://Scripts/level_generator.gd" id="2_dwf3a"]
-[ext_resource type="Texture2D" uid="uid://bc2ymhf6a3kkc" path="res://Sprites/UIRectangle.png" id="3_3l6q7"]
+[ext_resource type="Texture2D" uid="uid://b8puteu2brbbe" path="res://Sprites/UIRectangle.png" id="3_3l6q7"]
 
 [sub_resource type="GDScript" id="GDScript_dwf3a"]
 resource_name = "PauseMenuScript"
@@ -35,44 +35,6 @@ script = ExtResource("1_v1nyn")
 
 [node name="LevelGenerator" type="Node" parent="."]
 script = ExtResource("2_dwf3a")
-
-[node name="PauseMenu" type="Control" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = SubResource("GDScript_dwf3a")
-
-[node name="ResumeButton" type="Button" parent="PauseMenu"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.3
-anchor_top = 0.15
-anchor_right = 0.7
-anchor_bottom = 0.35
-text = "Resume"
-
-[node name="OptionsButton" type="Button" parent="PauseMenu"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.3
-anchor_top = 0.4
-anchor_right = 0.7
-anchor_bottom = 0.6
-text = "Options"
-
-[node name="QuitButton" type="Button" parent="PauseMenu"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.3
-anchor_top = 0.65
-anchor_right = 0.7
-anchor_bottom = 0.85
-text = "Quit to Menu"
 
 [node name="BoardBackground" type="ColorRect" parent="."]
 layout_mode = 1
@@ -153,6 +115,53 @@ grow_vertical = 2
 text = "HINT"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="PauseMenu" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = SubResource("GDScript_dwf3a")
+
+[node name="ColorRect" type="ColorRect" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.15127608, 0.15127608, 0.15127608, 1)
+
+[node name="ResumeButton" type="Button" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_top = 0.15
+anchor_right = 0.7
+anchor_bottom = 0.35
+text = "Resume"
+
+[node name="OptionsButton" type="Button" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_top = 0.4
+anchor_right = 0.7
+anchor_bottom = 0.6
+text = "Options"
+
+[node name="QuitButton" type="Button" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_top = 0.65
+anchor_right = 0.7
+anchor_bottom = 0.85
+text = "Quit to Menu"
 
 [connection signal="pressed" from="PauseMenu/ResumeButton" to="PauseMenu" method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PauseMenu/OptionsButton" to="PauseMenu" method="_on_options_button_pressed"]
