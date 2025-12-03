@@ -66,7 +66,7 @@ func save_score() -> void:
 	
 	var score_history : FileAccess = FileAccess.open("user://score_history.save", FileAccess.READ_WRITE)
 	score_history.seek_end()
-	score_history.store_line("%s - %d" % [Time.get_date_string_from_system(), score])
+	score_history.store_line("%s %s - %d" % [Time.get_date_string_from_system(), Time.get_time_string_from_system(), score])
 	score_history.close()
 	
 	file.close()

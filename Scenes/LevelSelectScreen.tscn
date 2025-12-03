@@ -151,9 +151,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
-text = "2025-12-03 - 100
-2025-12-03 - 200
-[color=gold][b][u]2025-12-03 - 300[/u][/b][/color]"
 fit_content = true
 
 [connection signal="pressed" from="VBoxContainer/EasyButton" to="." method="_on_easy_button_pressed"]
