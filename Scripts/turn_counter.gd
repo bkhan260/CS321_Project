@@ -13,4 +13,4 @@ func finish_turn() -> void:
 		#get_tree().root.add_child(game_scene)
 		#get_tree().current_scene.queue_free()
 		#get_tree().current_scene = game_scene
-		get_tree().change_scene_to_file("res://Scenes/MainMenuScene.tscn") ## TODO: Game over -> show highscore
+		get_tree().change_scene_to_file("res://Scenes/LevelSelectScreen.tscn")
