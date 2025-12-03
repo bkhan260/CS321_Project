@@ -32,6 +32,7 @@ script = ExtResource("1_mtww1")
 
 [node name="TurnController" type="Node" parent="."]
 script = ExtResource("1_v1nyn")
+turns_remaining = null
 
 [node name="LevelGenerator" type="Node" parent="."]
 script = ExtResource("2_dwf3a")

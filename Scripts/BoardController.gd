@@ -52,8 +52,23 @@ func _input(event: InputEvent) -> void:
 			first_item = null
 
 func save_score() -> void:
+	## This section is important for creating the files.
+	if not FileAccess.file_exists("user://highscore.save"):
+		var f := FileAccess.open("user://highscore.save", FileAccess.WRITE)
+		f.close()
+	if not FileAccess.file_exists("user://score_history.save"):
+		var f := FileAccess.open("user://score_history.save", FileAccess.WRITE)
+		f.close()
+	
+	
 	var file : FileAccess = FileAccess.open("user://highscore.save", FileAccess.READ)
 	var highscore : int = file.get_64() as int
+	
+	var score_history : FileAccess = FileAccess.open("user://score_history.save", FileAccess.READ_WRITE)
+	score_history.seek_end()
+	score_history.store_line("%s - %d" % [Time.get_date_string_from_system(), score])
+	score_history.close()
+	
 	file.close()
 	if score > highscore: # if new highscore, save it.
 		file = FileAccess.open("user://highscore.save", FileAccess.WRITE)

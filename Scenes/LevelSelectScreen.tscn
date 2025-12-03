@@ -10,6 +10,29 @@ func _on_easy_button_pressed() -> void: _start_game(DIFFICULTY.EASY)
 func _on_medium_button_pressed() -> void: _start_game(DIFFICULTY.MEDIUM)
 func _on_hard_button_pressed() -> void: _start_game(DIFFICULTY.HARD)
 
+func _ready() -> void:
+	if FileAccess.file_exists(\"user://score_history.save\"):
+		var scores_file : FileAccess = FileAccess.open(\"user://score_history.save\", FileAccess.READ)
+		%ScoreText.text = scores_file.get_as_text()
+		scores_file.close()
+	
+	if FileAccess.file_exists(\"user://highscore.save\"):
+		var high_score_f : FileAccess = FileAccess.open(\"user://highscore.save\", FileAccess.READ)
+		var high_score : int = high_score_f.get_64()
+		high_score_f.close()
+		
+		## Highlights high score text
+		## Only do this IFF there is a high score.
+		for line : String in %ScoreText.text.split(\"\\n\"):
+			var substr : PackedStringArray = line.split(\" - \")
+			
+			var line_score : int = substr[1].to_int()
+			if line_score == high_score:
+				var new_line : String = \"[color=gold]%s[/color]\" % line
+				%ScoreText.text = %ScoreText.text.replace(line, new_line)
+				break
+
+
 func _start_game(difficulty : DIFFICULTY = DIFFICULTY.MEDIUM) -> void:
 	var game_scene : Node = load(\"res://Scenes/GameBoardScene.tscn\").instantiate()
 	assert(game_scene.has_method(\"set_difficulty\")) ## so I dont forget to impliment
@@ -28,39 +51,111 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_lw2xu")
 
-[node name="EasyButton" type="Button" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+clip_contents = true
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.1
-anchor_top = 0.3
 anchor_right = 0.4
-anchor_bottom = 0.485
+anchor_bottom = 1.0
+offset_left = -0.20000458
+offset_right = 0.19998169
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="OrangeBox" type="ColorRect" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 125)
+layout_mode = 2
+color = Color(1, 0.30980393, 0, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer/OrangeBox"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 32
+bbcode_enabled = true
+text = "Difficulty"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EasyButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 125)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Easy"
 
-[node name="MediumButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.1
-anchor_top = 0.513
-anchor_right = 0.4
-anchor_bottom = 0.688
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MediumButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 125)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Medium"
 
-[node name="HardButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.1
-anchor_top = 0.713
-anchor_right = 0.4
-anchor_bottom = 0.888
-grow_horizontal = 2
-grow_vertical = 2
+[node name="HardButton" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 125)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
 text = "Hard"
 
-[connection signal="pressed" from="EasyButton" to="." method="_on_easy_button_pressed"]
-[connection signal="pressed" from="MediumButton" to="." method="_on_medium_button_pressed"]
-[connection signal="pressed" from="HardButton" to="." method="_on_hard_button_pressed"]
+[node name="OrangeBox2" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 125)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.55
+anchor_top = 0.068
+anchor_right = 0.90000004
+anchor_bottom = 0.261
+offset_left = 0.39996338
+offset_top = -0.06400299
+offset_right = 0.19995117
+offset_bottom = -0.12800598
+color = Color(1, 0.30980393, 0, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="OrangeBox2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 32
+bbcode_enabled = true
+text = "Scores"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.55
+anchor_top = 0.29200003
+anchor_right = 0.9
+anchor_bottom = 0.93200004
+offset_left = 0.39996338
+offset_top = -0.21601868
+offset_right = 0.20007324
+offset_bottom = 0.063964844
+horizontal_scroll_mode = 0
+
+[node name="ScoreContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScoreText" type="RichTextLabel" parent="ScrollContainer/ScoreContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "2025-12-03 - 100
+2025-12-03 - 200
+[color=gold][b][u]2025-12-03 - 300[/u][/b][/color]"
+fit_content = true
+
+[connection signal="pressed" from="VBoxContainer/EasyButton" to="." method="_on_easy_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MediumButton" to="." method="_on_medium_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HardButton" to="." method="_on_hard_button_pressed"]
