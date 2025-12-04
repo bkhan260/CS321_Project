@@ -18,6 +18,9 @@ var max_combo: int = 0
 ## The first item on the board that is selected when M1 is pressed down.
 var first_item : BoardItem = null
 
+const GRID_COLS = 8
+const GRID_ROWS = 8
+
 # Score values for diffrent matches
 const SCORE_3_MATCH = 30
 const SCORE_4_MATCH = 60
@@ -39,8 +42,8 @@ func set_difficulty(diff : DIFFICULTY) -> void:
 func _ready() -> void:
 	turn_controller.save_score.connect(save_score) ## Connect save score signal to function.
 
-    # Initialize score display
-	score = 0
+    
+	score = 0 
 	combo_multiplier = 1
 	max_combo = 0
 	
@@ -64,12 +67,130 @@ func _input(event: InputEvent) -> void:
 					first_item.item_type = new_item.item_type
 					new_item.item_type = temp
 					
-					## NEW ADVANCED SCORING - Replace old score += 10
-					# For now, assuming 3-match (you'll need to detect actual match size)
-					var match_count = 3  # TODO: Implement actual match detection
-					on_valid_swap_match(match_count)
+					# COUNT THE ACTUAL MATCH SIZE (NO MORE HARDCODING!)
+					var first_match = count_matched_tiles(first_item)
+					var second_match = count_matched_tiles(new_item)
+					var best_match = max(first_match, second_match)
+
+					if best_match >= 3:
+						add_points(best_match)
+						turn_controller.finish_turn()
+						update_turn_display()
+						print("Match of %d tiles scored!" % best_match)
+						# TODO: Clear matched tiles here
+					else:
+						# Swap back
+						temp = first_item.item_type
+						first_item.item_type = new_item.item_type
+						new_item.item_type = temp
 			
 			first_item = null
+
+func count_matched_tiles(item: BoardItem) -> int:
+	if item == null:
+		return 0
+	
+	var item_type = item.item_type
+	var col = int(item.pos.x)
+	var row = int(item.pos.y)
+	
+	# we start with horizontal, startinging with the tile itself
+	var horizontal = 1
+	
+	# first we Count left side of grid
+	var check_col = col - 1
+	while check_col >= 0:
+		var neighbor = get_item_at(check_col, row)
+		if neighbor != null and neighbor.item_type == item_type:
+			horizontal += 1
+			check_col -= 1
+		else:
+			break
+	
+	# then we Count right side of grid
+	check_col = col + 1
+	while check_col < GRID_COLS:
+		var neighbor = get_item_at(check_col, row)
+		if neighbor != null and neighbor.item_type == item_type:
+			horizontal += 1
+			check_col += 1
+		else:
+			break
+	
+	# now we count go vertical, sarting with the tile itself
+	var vertical = 1  
+	
+	# first we Count up
+	var check_row = row - 1
+	while check_row >= 0:
+		var neighbor = get_item_at(col, check_row)
+		if neighbor != null and neighbor.item_type == item_type:
+			vertical += 1
+			check_row -= 1
+		else:
+			break
+	
+	# then we Count down
+	check_row = row + 1
+	while check_row < GRID_ROWS:
+		var neighbor = get_item_at(col, check_row)
+		if neighbor != null and neighbor.item_type == item_type:
+			vertical += 1
+			check_row += 1
+		else:
+			break
+	
+	# Return the bigger count
+	var best = max(horizontal, vertical)
+	
+	if best >= 3:
+		print("  Found match at (%d,%d): H=%d, V=%d → %d tiles" % [col, row, horizontal, vertical, best])
+	return best
+
+
+
+func get_item_at(col: int, row: int) -> BoardItem:
+	# Search through all direct children of BoardController
+	for child in get_children():
+		if child is BoardItem:
+			if int(child.pos.x) == col and int(child.pos.y) == row:
+				return child
+	return null
+
+
+
+
+
+ 
+func add_points(match_size: int):
+    # this section will be used for the scoring system
+	var points = get_points_for_match(match_size)
+	score += points
+	update_score_display()
+	
+	# Show feedback
+	if hint_label:
+		hint_label.text = "+%d" % points
+
+
+func get_points_for_match(match_size: int) -> int:
+	match match_size:
+		3: return SCORE_3_MATCH     # 30 points
+		4: return SCORE_4_MATCH     # 60 points
+		5: return SCORE_5_MATCH     # 100 points
+		_: return SCORE_6_PLUS_MATCH # 150 points
+
+
+func update_score_display(): ##this basically updates the scores on the screen
+	if score_label:
+		score_label.text = "SCORE:\n%d" % score
+
+
+func update_turn_display(): ##this basically updates the turns on the screen
+	if turn_label:
+		turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
+
+
 
 func save_score() -> void:
 	## This section is important for creating the files.
@@ -94,123 +215,3 @@ func save_score() -> void:
 		file = FileAccess.open("user://highscore.save", FileAccess.WRITE)
 		file.store_64(score)
 		file.close()
-
-
-func add_score_for_match(match_size: int, is_cascade: bool = false):
-	var base_points = calculate_base_score(match_size)
-	var combo_bonus = calculate_combo_bonus()
-	var cascade_bonus_points = CASCADE_BONUS if is_cascade else 0
-	
-	var total_points = base_points + combo_bonus + cascade_bonus_points
-	
-	score += total_points
-	update_score_display()
-	
-	# Show score popup
-	show_score_popup(total_points, is_cascade)
-	
-	print("Match scored! Size: %d, Points: %d (Base: %d, Combo: %d, Cascade: %d)" % 
-		[match_size, total_points, base_points, combo_bonus, cascade_bonus_points])
-
-
-func calculate_base_score(match_size: int) -> int:
-	match match_size:
-		3: return SCORE_3_MATCH     # 30 points
-		4: return SCORE_4_MATCH     # 60 points
-		5: return SCORE_5_MATCH     # 100 points
-		_: return SCORE_6_PLUS_MATCH # 150 points for 6+
-
-
-func calculate_combo_bonus() -> int:
-	"""Calculate bonus points from current combo multiplier"""
-	return (combo_multiplier - 1) * COMBO_BONUS
-
-
-func increment_combo():
-	"""Increase combo counter for cascading matches"""
-	combo_multiplier += 1
-	if combo_multiplier > max_combo:
-		max_combo = combo_multiplier
-	
-	print("COMBO x%d!" % combo_multiplier)
-	
-	# Show combo notification
-	if hint_label:
-		hint_label.text = "COMBO x%d!" % combo_multiplier
-
-
-func reset_combo():
-	"""Reset combo when player makes a new move (not cascade)"""
-	if combo_multiplier > 1:
-		print("Combo ended at x%d" % combo_multiplier)
-	combo_multiplier = 1
-
-
-func update_score_display():
-	"""Update the score label on screen"""
-	if score_label:
-		score_label.text = "SCORE:\n%d" % score
-
-
-func update_turn_display():
-	"""Update the turns remaining label"""
-	if turn_label:
-		turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
-
-
-func show_score_popup(points: int, is_combo: bool):
-	"""Show floating score popup"""
-	if hint_label:
-		var text = "+%d" % points
-		if is_combo:
-			text = "+%d COMBO!" % points
-		
-		hint_label.text = text
-		hint_label.modulate.a = 1.0
-		
-		# Fade out animation
-		var tween = create_tween()
-		tween.tween_property(hint_label, "modulate:a", 1.0, 0.1)
-		tween.tween_property(hint_label, "modulate:a", 0.0, 1.5)
-
-
-func on_valid_swap_match(matched_tiles_count: int):
-	"""
-	Called when player makes a valid swap that creates a match
-	matched_tiles_count: How many tiles were matched
-	"""
-	# Reset combo since this is a new player move
-	reset_combo()
-	
-	# Add score for the match
-	add_score_for_match(matched_tiles_count, false)
-	
-	# Decrease turn
-	turn_controller.finish_turn()
-	update_turn_display()
-	
-	# Check for cascades after clearing tiles
-	# (Your existing cascade detection code should call process_cascade)
-
-
-func process_cascade(matched_tiles_count: int):
-	"""
-	Called when a cascade (chain reaction) creates a match
-	matched_tiles_count: How many tiles matched in this cascade
-	"""
-	# Increment combo
-	increment_combo()
-	
-	# Add score with cascade bonus
-	add_score_for_match(matched_tiles_count, true)
-	
-	# Don't decrease turn for cascades!
-	# Cascades are free bonus matches
-
-
-func game_over():
-	print("GAME OVER! Final Score: %d, Max Combo: x%d" % [score, max_combo])
-	# Save high score
-	save_score()
-	# Return to main menu
-	get_tree().change_scene_to_file("res://Scenes/MainMenuScene.tscn")
