@@ -7,13 +7,13 @@ class_name LevelGenerator extends Node
 
 var board: Array = [] #2D array of board and board objects
 
-const TILE_SIZE := Vector2(588, 588)
 
 # Generate board according to difficulty level
 func generate_level(difficulty : BoardController.DIFFICULTY = BoardController.DIFFICULTY.EASY) -> void:
 	var num_columns : int = desired_columns[difficulty as int] # determine the size of the board based on difficulty
 	item_grid.columns = num_columns
 	# initialize 2D array for match checking
+	board.clear()
 	for row in range(num_columns):
 		board.append([])
 		for col in range(num_columns):
@@ -24,11 +24,8 @@ func generate_level(difficulty : BoardController.DIFFICULTY = BoardController.DI
 			var new_item : BoardItem = item_blueprint.instantiate()
 			new_item.item_type = randi_range(0,3) as BoardItem.ITEM_TYPE
 			new_item.pos = Vector2i(column, row)
-			#var sprite = new_item.get_node("Sprite")
-			#var tex_size = sprite.texture.get_size()
-			#sprite.scale = TILE_SIZE/tex_size
-			if new_item.has_method("set_position"):
-				new_item.position = Vector2(column, row) * TILE_SIZE
+			#if new_item.has_method("set_position"):
+				#new_item.position = Vector2(column, row) * TILE_SIZE
 			item_grid.add_child(new_item, true)
 			board[row][column] = new_item
 
@@ -219,13 +216,8 @@ func resolve_board(max_iterations: int = 50) -> void:
 		clear_matches(matches)
 		gravity()
 		refill_board()
-
 		# allow a frame for visuals/tweens/engine to update (prevents perceived freezes)
-		#await get_tree().process_frame
-		#if get_tree():
-			#await get_tree().process_frame
-		#else:
-		await safe_wait_frame()  # fallback safe version
-			
+		await safe_wait_frame() 
+
 func safe_wait_frame() -> void:
 	await Engine.get_main_loop().create_timer(0.0).timeout

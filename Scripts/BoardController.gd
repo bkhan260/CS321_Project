@@ -115,7 +115,9 @@ func _input(event: InputEvent) -> void:
 					
 					score_label.text = "SCORE:\n%d" % score
 					turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
+					await $LevelGenerator.safe_wait_frame()
 					$LevelGenerator.resolve_board()
+					
 					# COUNT THE ACTUAL MATCH SIZE (NO MORE HARDCODING!)
 					var first_match = count_matched_tiles(first_item)
 					var second_match = count_matched_tiles(new_item)
