@@ -11,37 +11,8 @@ enum DIFFICULTY {EASY, MEDIUM, HARD} # Must match LevelSelect.gd DIFFICULTY enum
 ## Total score for this game
 var score : int = 0
 
-## rest of system variables
-var combo_multiplier: int = 1 
-var max_combo: int = 0
-
-
-
 ## The first item on the board that is selected when M1 is pressed down.
 var first_item : BoardItem = null
-
-#<<<<<<< HEAD
-#var turn = 0
-#=======
-
-
-var grid_cols : int = 8
-var grid_rows : int = 8
-
-
-
-# Score values for diffrent matches
-const SCORE_3_MATCH = 30
-const SCORE_4_MATCH = 60
-const SCORE_5_MATCH = 100
-const SCORE_6_PLUS_MATCH = 150
-
-# Bonus points
-const COMBO_BONUS = 10  # Per combo level
-const CASCADE_BONUS = 20  # For chain reactions
-
-
-#>>>>>>> 1357db25246501c7e3b6e21c41c105d386e7cb5a
 
 ## Generates a level based on the passed difficulty
 ## Should be called by the LevelSelectScreen when a difficulty is selected
@@ -49,23 +20,11 @@ const CASCADE_BONUS = 20  # For chain reactions
 func set_difficulty(diff : DIFFICULTY) -> void:
 	await self.ready
 	$LevelGenerator.generate_level(diff)
-	grid_cols = $LevelGenerator.item_grid.columns
-	grid_rows = grid_cols  # represents squares (5x5,10x110, etc.).
-	$LevelGenerator.resolve_board() # get rid of matches that may be present before the user does anything
-
+	$LevelGenerator.resolve_board()
 
 func _ready() -> void:
 	turn_controller.save_score.connect(save_score) ## Connect save score signal to function.
-
 	
-	score = 0 
-	combo_multiplier = 1
-	max_combo = 0
-	
-	update_score_display()
-	update_turn_display()
-
-
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -103,17 +62,15 @@ func _input(event: InputEvent) -> void:
 						await $LevelGenerator.resolve_board()
 						score += 10
 
-					else:
-						board[b_pos.y][b_pos.x] = b
-						board[a_pos.y][a_pos.x] = a
-						
-						a.pos = a_pos
-						b.pos = b_pos
-						$LevelGenerator._rebuild_grid_children()
-						await $LevelGenerator.safe_wait_frame()
+					#else:
+						#board[b_pos.y][b_pos.x] = b
+						#board[a_pos.y][a_pos.x] = a
+						#
+						#a.pos = a_pos
+						#b.pos = b_pos
+					$LevelGenerator._rebuild_grid_children()
+					await $LevelGenerator.safe_wait_frame()
 					turn_controller.finish_turn()
-					update_score_display()
-					update_turn_display()
 						
 # Swap visuals (either rect_position or position)
 					#if "rect_position" in a:
@@ -123,14 +80,21 @@ func _input(event: InputEvent) -> void:
 						#a.position = Vector2(b_pos.x, b_pos.y)
 						#b.position = Vector2(a_pos.x, a_pos.y)
 				
+
+					
+					#var temp : BoardItem.ITEM_TYPE = first_item.item_type ## Swap the two items.
+					#first_item.item_type = new_item.item_type
+					#new_item.item_type = temp
+					
+
 					## TODO ASSUMING Swap was VALID, then take a turn away + Increase score
 					#score += 10
 					#turn_controller.finish_turn()
 					
 					
-					
 					score_label.text = "SCORE:\n%d" % score
 					turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
+
 					
 					await $LevelGenerator.safe_wait_frame()
 					$LevelGenerator.resolve_board()
@@ -152,119 +116,9 @@ func _input(event: InputEvent) -> void:
 						#var temp = first_item.item_type
 						#first_item.item_type = new_item.item_type
 						#new_item.item_type = temp
+
 			
 			first_item = null
-		
-
-
-
-
-func count_matched_tiles(item: BoardItem) -> int:
-	if item == null:
-		return 0
-	
-	var item_type = item.item_type
-	var col = int(item.pos.x)
-	var row = int(item.pos.y)
-	
-	# we start with horizontal, startinging with the tile itself
-	var horizontal = 1
-	
-	# first we Count left side of grid
-	var check_col = col - 1
-	while check_col >= 0:
-		var neighbor = get_item_at(check_col, row)
-		if neighbor != null and neighbor.item_type == item_type:
-			horizontal += 1
-			check_col -= 1
-		else:
-			break
-
-	# then we Count right side of grid
-	check_col = col + 1
-	while check_col < grid_cols:
-		var neighbor = get_item_at(check_col, row)
-		if neighbor != null and neighbor.item_type == item_type:
-			horizontal += 1
-			check_col += 1
-		else:
-			break
-	
-	# now we count go vertical, sarting with the tile itself
-	var vertical = 1  
-	
-	# first we Count up
-	var check_row = row - 1
-	while check_row >= 0:
-		var neighbor = get_item_at(col, check_row)
-		if neighbor != null and neighbor.item_type == item_type:
-			vertical += 1
-			check_row -= 1
-		else:
-			break
-	
-	# then we Count down
-	check_row = row + 1
-	while check_row < grid_rows:
-		var neighbor = get_item_at(col, check_row)
-		if neighbor != null and neighbor.item_type == item_type:
-			vertical += 1
-			check_row += 1
-		else:
-			break
-	
-	# Return the bigger count
-	var best = max(horizontal, vertical)
-	
-	if best >= 3:
-		print("  Found match at (%d,%d): H=%d, V=%d → %d tiles" % [col, row, horizontal, vertical, best])
-	return best
-
-
-
-
-func get_item_at(col: int, row: int) -> BoardItem:
-	# Search through all direct children of BoardController
-	var item_grid = $LevelGenerator.item_grid
-	if item_grid:
-		for child in item_grid.get_children():
-			if child is BoardItem:
-				if int(child.pos.x) == col and int(child.pos.y) == row:
-					return child
-	return null
-
-
-
- 
-func add_points(match_size: int):
-	# this section will be used for the scoring system
-	var points = get_points_for_match(match_size)
-	score += points
-	update_score_display()
-	
-	# Show feedback
-	if hint_label:
-		hint_label.text = "+%d" % points
-
-
-func get_points_for_match(match_size: int) -> int:
-	match match_size:
-		3: return SCORE_3_MATCH     # 30 points
-		4: return SCORE_4_MATCH     # 60 points
-		5: return SCORE_5_MATCH     # 100 points
-		_: return SCORE_6_PLUS_MATCH # 150 points
-
-
-func update_score_display(): ##this basically updates the scores on the screen
-	if score_label:
-		score_label.text = "SCORE:\n%d" % score
-
-
-func update_turn_display(): ##this basically updates the turns on the screen
-	if turn_label:
-		turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
-
-
 
 func save_score() -> void:
 	## This section is important for creating the files.
