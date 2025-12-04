@@ -221,4 +221,11 @@ func resolve_board(max_iterations: int = 50) -> void:
 		refill_board()
 
 		# allow a frame for visuals/tweens/engine to update (prevents perceived freezes)
-		await get_tree().process_frame
+		#await get_tree().process_frame
+		#if get_tree():
+			#await get_tree().process_frame
+		#else:
+		await safe_wait_frame()  # fallback safe version
+			
+func safe_wait_frame() -> void:
+	await Engine.get_main_loop().create_timer(0.0).timeout
