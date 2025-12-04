@@ -15,11 +15,10 @@ var score : int = 0
 var combo_multiplier: int = 1 
 var max_combo: int = 0
 
-
-
 ## The first item on the board that is selected when M1 is pressed down.
 var first_item : BoardItem = null
 
+<<<<<<< HEAD
 #<<<<<<< HEAD
 #var turn = 0
 #=======
@@ -29,6 +28,10 @@ var grid_cols : int = 8
 var grid_rows : int = 8
 
 
+=======
+const GRID_COLS = 8
+const GRID_ROWS = 8
+>>>>>>> parent of 126d7cd (Refactor grid dimensions to use instance variables)
 
 # Score values for diffrent matches
 const SCORE_3_MATCH = 30
@@ -41,18 +44,24 @@ const COMBO_BONUS = 10  # Per combo level
 const CASCADE_BONUS = 20  # For chain reactions
 
 
+<<<<<<< HEAD
 #>>>>>>> 1357db25246501c7e3b6e21c41c105d386e7cb5a
 
+=======
+>>>>>>> parent of 126d7cd (Refactor grid dimensions to use instance variables)
 ## Generates a level based on the passed difficulty
 ## Should be called by the LevelSelectScreen when a difficulty is selected
 ## Must await BoardController.ready or else all instances will be null
 func set_difficulty(diff : DIFFICULTY) -> void:
 	await self.ready
 	$LevelGenerator.generate_level(diff)
+<<<<<<< HEAD
 	grid_cols = $LevelGenerator.item_grid.columns
 	grid_rows = grid_cols  # represents squares (5x5,10x110, etc.).
 	$LevelGenerator.resolve_board() # get rid of matches that may be present before the user does anything
 
+=======
+>>>>>>> parent of 126d7cd (Refactor grid dimensions to use instance variables)
 
 func _ready() -> void:
 	turn_controller.save_score.connect(save_score) ## Connect save score signal to function.
@@ -64,8 +73,6 @@ func _ready() -> void:
 	
 	update_score_display()
 	update_turn_display()
-
-
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -138,9 +145,6 @@ func _input(event: InputEvent) -> void:
 			first_item = null
 		
 
-
-
-
 func count_matched_tiles(item: BoardItem) -> int:
 	if item == null:
 		return 0
@@ -161,10 +165,10 @@ func count_matched_tiles(item: BoardItem) -> int:
 			check_col -= 1
 		else:
 			break
-
+	
 	# then we Count right side of grid
 	check_col = col + 1
-	while check_col < grid_cols:
+	while check_col < GRID_COLS:
 		var neighbor = get_item_at(check_col, row)
 		if neighbor != null and neighbor.item_type == item_type:
 			horizontal += 1
@@ -187,7 +191,7 @@ func count_matched_tiles(item: BoardItem) -> int:
 	
 	# then we Count down
 	check_row = row + 1
-	while check_row < grid_rows:
+	while check_row < GRID_ROWS:
 		var neighbor = get_item_at(col, check_row)
 		if neighbor != null and neighbor.item_type == item_type:
 			vertical += 1
@@ -204,16 +208,15 @@ func count_matched_tiles(item: BoardItem) -> int:
 
 
 
-
 func get_item_at(col: int, row: int) -> BoardItem:
 	# Search through all direct children of BoardController
-	var item_grid = $LevelGenerator.item_grid
-	if item_grid:
-		for child in item_grid.get_children():
-			if child is BoardItem:
-				if int(child.pos.x) == col and int(child.pos.y) == row:
-					return child
+	for child in get_children():
+		if child is BoardItem:
+			if int(child.pos.x) == col and int(child.pos.y) == row:
+				return child
 	return null
+
+
 
 
 
