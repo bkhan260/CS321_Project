@@ -10,9 +10,21 @@ enum DIFFICULTY {EASY, MEDIUM, HARD} # Must match LevelSelect.gd DIFFICULTY enum
 
 ## Total score for this game
 var score : int = 0
+ 
+
+
 
 ## The first item on the board that is selected when M1 is pressed down.
 var first_item : BoardItem = null
+
+## this scores values for diffrent match sizes 
+const SCORE_3 = 30
+const SCORE_4 = 60
+const SCORE_5 = 100
+const SCORE6PLUS = 150
+
+
+
 
 ## Generates a level based on the passed difficulty
 ## Should be called by the LevelSelectScreen when a difficulty is selected
@@ -23,6 +35,10 @@ func set_difficulty(diff : DIFFICULTY) -> void:
 
 func _ready() -> void:
 	turn_controller.save_score.connect(save_score) ## Connect save score signal to function.
+	
+	
+	
+	
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
