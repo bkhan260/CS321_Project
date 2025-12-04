@@ -79,11 +79,6 @@ func _input(event: InputEvent) -> void:
 				if new_item is BoardItem and first_item.pos.distance_to(new_item.pos) == 1.0: ## The distance should only be 1. if > 1 it was too far.
 					
 					## TODO: IF swap is possible, check its validity, then swap & clear valid matches.
-					
-					#var temp : BoardItem.ITEM_TYPE = first_item.item_type ## Swap the two items.
-					#first_item.item_type = new_item.item_type
-					#new_item.item_type = temp
-					
 					# Store positions
 					var a : BoardItem = first_item
 					var b : BoardItem = new_item
@@ -98,42 +93,65 @@ func _input(event: InputEvent) -> void:
 # Swap pos variables
 					a.pos = b_pos
 					b.pos = a_pos
+					
+					$LevelGenerator._rebuild_grid_children()
+					await $LevelGenerator.safe_wait_frame()
+					
+					var matches = $LevelGenerator.find_matches()
+					
+					if matches.size() > 0:
+						await $LevelGenerator.resolve_board()
+						score += 10
 
-# Swap visuals (either rect_position or position)
-					if "rect_position" in a:
-						a.rect_position = Vector2(b_pos.x, b_pos.y)
-						b.rect_position = Vector2(a_pos.x, a_pos.y)
 					else:
-						a.position = Vector2(b_pos.x, b_pos.y)
-						b.position = Vector2(a_pos.x, a_pos.y)
+						board[b_pos.y][b_pos.x] = b
+						board[a_pos.y][a_pos.x] = a
+						
+						a.pos = a_pos
+						b.pos = b_pos
+						$LevelGenerator._rebuild_grid_children()
+						await $LevelGenerator.safe_wait_frame()
+					turn_controller.finish_turn()
+					update_score_display()
+					update_turn_display()
+						
+# Swap visuals (either rect_position or position)
+					#if "rect_position" in a:
+						#a.rect_position = Vector2(b_pos.x, b_pos.y)
+						#b.rect_position = Vector2(a_pos.x, a_pos.y)
+					#else:
+						#a.position = Vector2(b_pos.x, b_pos.y)
+						#b.position = Vector2(a_pos.x, a_pos.y)
 				
 					## TODO ASSUMING Swap was VALID, then take a turn away + Increase score
-					score += 10
-					turn_controller.finish_turn()
+					#score += 10
+					#turn_controller.finish_turn()
 					
 					
 					
 					score_label.text = "SCORE:\n%d" % score
 					turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
+					
 					await $LevelGenerator.safe_wait_frame()
 					$LevelGenerator.resolve_board()
 					
+					
 					# COUNT THE ACTUAL MATCH SIZE (NO MORE HARDCODING!)
-					var first_match = count_matched_tiles(first_item)
-					var second_match = count_matched_tiles(new_item)
-					var best_match = max(first_match, second_match)
-
-					if best_match >= 3:
-						add_points(best_match)
-						turn_controller.finish_turn()
-						update_turn_display()
-						print("Match of %d tiles scored!" % best_match)
-						# TODO: Clear matched tiles here
-					else:
-						# Swap back
-						var temp = first_item.item_type
-						first_item.item_type = new_item.item_type
-						new_item.item_type = temp
+					#var first_match = count_matched_tiles(first_item)
+					#var second_match = count_matched_tiles(new_item)
+					#var best_match = max(first_match, second_match)
+#
+					#if best_match >= 3:
+						#add_points(best_match)
+						#turn_controller.finish_turn()
+						#update_turn_display()
+						#print("Match of %d tiles scored!" % best_match)
+						## TODO: Clear matched tiles here
+					#else:
+						## Swap back
+						#var temp = first_item.item_type
+						#first_item.item_type = new_item.item_type
+						#new_item.item_type = temp
 			
 			first_item = null
 		
