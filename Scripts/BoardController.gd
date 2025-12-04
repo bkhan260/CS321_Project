@@ -14,12 +14,15 @@ var score : int = 0
 ## The first item on the board that is selected when M1 is pressed down.
 var first_item : BoardItem = null
 
+#var turn = 0
+
 ## Generates a level based on the passed difficulty
 ## Should be called by the LevelSelectScreen when a difficulty is selected
 ## Must await BoardController.ready or else all instances will be null
 func set_difficulty(diff : DIFFICULTY) -> void:
 	await self.ready
 	$LevelGenerator.generate_level(diff)
+	$LevelGenerator.resolve_board() # get rid of matches that may be present before the user does anything
 
 func _ready() -> void:
 	turn_controller.save_score.connect(save_score) ## Connect save score signal to function.
@@ -37,19 +40,45 @@ func _input(event: InputEvent) -> void:
 					
 					## TODO: IF swap is possible, check its validity, then swap & clear valid matches.
 					
-					var temp : BoardItem.ITEM_TYPE = first_item.item_type ## Swap the two items.
-					first_item.item_type = new_item.item_type
-					new_item.item_type = temp
+					#var temp : BoardItem.ITEM_TYPE = first_item.item_type ## Swap the two items.
+					#first_item.item_type = new_item.item_type
+					#new_item.item_type = temp
+					
+					# Store positions
+					var a : BoardItem = first_item
+					var b : BoardItem = new_item
+					var a_pos : Vector2i = a.pos
+					var b_pos : Vector2i = b.pos
+
+# Swap in board array
+					var board :Array = $LevelGenerator.board
+					board[a_pos.y][a_pos.x] = b
+					board[b_pos.y][b_pos.x] = a
+
+# Swap pos variables
+					a.pos = b_pos
+					b.pos = a_pos
+
+# Swap visuals (either rect_position or position)
+					if "rect_position" in a:
+						a.rect_position = Vector2(b_pos.x, b_pos.y)
+						b.rect_position = Vector2(a_pos.x, a_pos.y)
+					else:
+						a.position = Vector2(b_pos.x, b_pos.y)
+						b.position = Vector2(a_pos.x, a_pos.y)
 					
 					## TODO ASSUMING Swap was VALID, then take a turn away + Increase score
 					score += 10
 					turn_controller.finish_turn()
 					
 					
+					
 					score_label.text = "SCORE:\n%d" % score
 					turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
+					$LevelGenerator.resolve_board()
 			
 			first_item = null
+		
 
 func save_score() -> void:
 	## This section is important for creating the files.
