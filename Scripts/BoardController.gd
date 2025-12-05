@@ -58,6 +58,17 @@ func _input(event: InputEvent) -> void:
 					var b_pos: Vector2i = b.pos
 						
 					var board: Array = $LevelGenerator.board
+
+					############################## animation for "swaps" starts here
+					var tween = create_tween()
+					tween.set_parallel(true)
+					tween.set_trans(Tween.TRANS_CUBIC)
+					tween.set_ease(Tween.EASE_OUT)
+					tween.tween_property(a, "position", b.position, 0.15)
+					tween.tween_property(b, "position", a.position, 0.15)
+					await tween.finished
+					############################## animation for "swaps" ends here
+
 					board[a_pos.y][a_pos.x] = b
 					board[b_pos.y][b_pos.x] = a
 					
