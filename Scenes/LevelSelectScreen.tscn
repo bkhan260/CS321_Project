@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://tksed8cep5qo"]
 
-[ext_resource type="Texture2D" uid="uid://boxcfip6s6v6p" path="res://Sprites/underwater_world_pixel_background/1.png" id="1_ui58y"]
+[ext_resource type="Texture2D" uid="uid://boxcfip6s6v6p" path="res://Sprites/1.png" id="1_ui58y"]
 
 [sub_resource type="GDScript" id="GDScript_lw2xu"]
 resource_name = "LevelSelectScreen"

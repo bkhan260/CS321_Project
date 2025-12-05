@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://lm3gay1sdn6t" path="res://Scripts/turn_counter.gd" id="1_v1nyn"]
 [ext_resource type="Script" uid="uid://docqhcorp7egt" path="res://Scripts/level_generator.gd" id="2_dwf3a"]
 [ext_resource type="Texture2D" uid="uid://b8puteu2brbbe" path="res://Sprites/UIRectangle.png" id="3_3l6q7"]
-[ext_resource type="Texture2D" uid="uid://boxcfip6s6v6p" path="res://Sprites/underwater_world_pixel_background/1.png" id="5_qf1vj"]
+[ext_resource type="Texture2D" uid="uid://boxcfip6s6v6p" path="res://Sprites/1.png" id="5_qf1vj"]
 
 [sub_resource type="GDScript" id="GDScript_dwf3a"]
 resource_name = "PauseMenuScript"

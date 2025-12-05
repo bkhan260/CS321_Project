@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cgmfaqypmkyst"]
 
 [ext_resource type="Script" uid="uid://dsj2w8sfg26e3" path="res://Scenes/MainMenuScene.tres.gd" id="1_47sjk"]
-[ext_resource type="Texture2D" uid="uid://ka6a2q6utka5" path="res://Sprites/underwater_world_pixel_background/orig_big.png" id="1_sb72h"]
+[ext_resource type="Texture2D" uid="uid://ka6a2q6utka5" path="res://Sprites/orig_big.png" id="1_sb72h"]
 
 [node name="MainMenuScene" type="Control"]
 layout_mode = 3
