@@ -174,8 +174,16 @@ func refill_board():
 			if board[r][c] == null:
 				var tile : BoardItem = item_blueprint.instantiate()
 				tile.item_type = randi_range(0,3)
-				tile.pos = Vector2i(c, r)
+				tile.scale = Vector2.ZERO ############ added
 				board[r][c] = tile
+				item_grid.add_child(tile) ############ added
+				### added
+				var tween = create_tween()
+				tween.set_trans(Tween.TRANS_CUBIC)
+				tween.set_ease(Tween.EASE_OUT)
+				tween.tween_property(tile, "scale", Vector2.ONE, 0.2)
+				### additions end here
+				tile.pos = Vector2i(c, r) ############ moved down
 
 	_rebuild_grid_children()
 
