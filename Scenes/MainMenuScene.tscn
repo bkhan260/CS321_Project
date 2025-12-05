@@ -1,28 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cgmfaqypmkyst"]
+[gd_scene load_steps=3 format=3 uid="uid://cgmfaqypmkyst"]
 
-[sub_resource type="GDScript" id="GDScript_8qbal"]
-resource_name = "MainMenuScript"
-script/source = "extends Control
-
-func _on_play_button_pressed() -> void:
-	get_tree().change_scene_to_file(\"res://Scenes/LevelSelectScreen.tscn\") 
-	# This is the simple way to change screens... but we cant pass arguments (See LevelSelectScreen.tscn for why this is important to note)
-
-func _on_quit_button_pressed() -> void:
-	get_tree().quit()
-
-func _ready() -> void:
-	get_highscore()
-
-
-func get_highscore() -> void:
-	if not FileAccess.file_exists(\"user://highscore.save\"): return
-	
-	var file : FileAccess = FileAccess.open(\"user://highscore.save\", FileAccess.READ)
-	var score = file.get_64()
-	file.close()
-	$HighScoreLabel.text = \"Current High Score: [rainbow][wave]%d[/wave][/rainbow]\" % score
-"
+[ext_resource type="Script" uid="uid://dsj2w8sfg26e3" path="res://Scenes/MainMenuScene.tres.gd" id="1_47sjk"]
+[ext_resource type="Texture2D" uid="uid://ka6a2q6utka5" path="res://Sprites/underwater_world_pixel_background/orig_big.png" id="1_sb72h"]
 
 [node name="MainMenuScene" type="Control"]
 layout_mode = 3
@@ -31,30 +10,16 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = SubResource("GDScript_8qbal")
+script = ExtResource("1_47sjk")
 
-[node name="PlayButton" type="Button" parent="."]
+[node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.3
-anchor_top = 0.2
-anchor_right = 0.7
-anchor_bottom = 0.4
-offset_left = -0.06402588
-offset_right = 0.063964844
-offset_bottom = -0.28800964
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
-text = "Play"
-
-[node name="QuitButton" type="Button" parent="."]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.3
-anchor_top = 0.5
-anchor_right = 0.7
-anchor_bottom = 0.7
-grow_horizontal = 2
-text = "Quit"
+grow_vertical = 2
+texture = ExtResource("1_sb72h")
 
 [node name="HighScoreLabel" type="RichTextLabel" parent="."]
 layout_mode = 0
@@ -64,5 +29,30 @@ theme_override_font_sizes/normal_font_size = 24
 bbcode_enabled = true
 text = "Current High Score: 0"
 
-[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]
+[node name="QuitButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_top = 0.5
+anchor_right = 0.7
+anchor_bottom = 0.7
+offset_right = 26.000061
+offset_bottom = 22.99997
+grow_horizontal = 2
+text = "Quit"
+
+[node name="PlayButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3
+anchor_top = 0.2
+anchor_right = 0.7
+anchor_bottom = 0.4
+offset_left = -0.06402588
+offset_right = 24.935974
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Play"
+
 [connection signal="pressed" from="QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]

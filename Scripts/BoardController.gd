@@ -114,7 +114,6 @@ func _input(event: InputEvent) -> void:
 						#var temp = first_item.item_type
 						#first_item.item_type = new_item.item_type
 						#new_item.item_type = temp
-
 			
 			first_item = null
 						
