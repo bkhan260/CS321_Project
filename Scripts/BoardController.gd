@@ -32,15 +32,12 @@ const SCORE6PLUS = 150
 func set_difficulty(diff : DIFFICULTY) -> void:
 	await self.ready
 	$LevelGenerator.generate_level(diff)
+	$LevelGenerator.resolve_board()
 
 func _ready() -> void:
 	turn_controller.save_score.connect(save_score) ## Connect save score signal to function.
 	
-	
-	
-	
-	
-	
+
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -54,6 +51,7 @@ func _input(event: InputEvent) -> void:
 				if new_item is BoardItem and first_item.pos.distance_to(new_item.pos) == 1.0: ## The distance should only be 1. if > 1 it was too far.
 					
 					## TODO: IF swap is possible, check its validity, then swap & clear valid matches.
+
 					var a: BoardItem = first_item
 					var b: BoardItem = new_item
 					var a_pos: Vector2i = a.pos
@@ -78,7 +76,6 @@ func _input(event: InputEvent) -> void:
 						var points = count_match(matches)
 						score += points
 						
-						print("Valid match! Earned %d points (Total: %d)" % [points, score])
 						
 						# Resolve board
 						await $LevelGenerator.resolve_board()
@@ -90,7 +87,7 @@ func _input(event: InputEvent) -> void:
 					
 					# Decrease turn
 					turn_controller.finish_turn()
-					
+						
 					# Update displays
 					score_label.text = "SCORE:\n%d" % score
 					turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
@@ -98,6 +95,27 @@ func _input(event: InputEvent) -> void:
 					await $LevelGenerator.safe_wait_frame()
 					$LevelGenerator.resolve_board()
 				
+
+					
+					
+					# COUNT THE ACTUAL MATCH SIZE (NO MORE HARDCODING!)
+					#var first_match = count_matched_tiles(first_item)
+					#var second_match = count_matched_tiles(new_item)
+					#var best_match = max(first_match, second_match)
+#
+					#if best_match >= 3:
+						#add_points(best_match)
+						#turn_controller.finish_turn()
+						#update_turn_display()
+						#print("Match of %d tiles scored!" % best_match)
+						## TODO: Clear matched tiles here
+					#else:
+						## Swap back
+						#var temp = first_item.item_type
+						#first_item.item_type = new_item.item_type
+						#new_item.item_type = temp
+
+			
 			first_item = null
 						
 
