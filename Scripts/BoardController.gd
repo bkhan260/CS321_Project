@@ -7,14 +7,10 @@ enum DIFFICULTY {EASY, MEDIUM, HARD} # Must match LevelSelect.gd DIFFICULTY enum
 @onready var score_label: RichTextLabel = $ScoreBox/ScoreLabel
 @onready var turn_label: RichTextLabel = $TurnBox/TurnLabel
 @onready var hint_label: RichTextLabel = $HintBox/HintLabel
-@onready var level_generator: LevelGenerator = $LevelGenerator
+
 
 ## Total score for this game
 var score : int = 0
-
-var grid_width: int = 6
-var grid_height: int = 6
- 
 
 
 
@@ -58,30 +54,51 @@ func _input(event: InputEvent) -> void:
 				if new_item is BoardItem and first_item.pos.distance_to(new_item.pos) == 1.0: ## The distance should only be 1. if > 1 it was too far.
 					
 					## TODO: IF swap is possible, check its validity, then swap & clear valid matches.
-					var match_size = check_swap(first_item, new_item)
-					if match_size >= 3:
+					var a: BoardItem = first_item
+					var b: BoardItem = new_item
+					var a_pos: Vector2i = a.pos
+					var b_pos: Vector2i = b.pos
 						
-						## Specific swaping mehcanism
-						var temp: BoardItem.ITEM_TYPE = first_item.item_type
-						first_item.item_type = new_item.item_type
-						new_item.item_type = temp
-						
-						## get points based on the size
-						var full_points = get_score(match_size)
-						score += full_points
-						
-						## we then decrease the specific turn after
-						turn_controller.finish_turn()
-						
-						## We then update the display
-						score_label.text = " SCORE:\n%d" % score
-						turn_label.text = " TURNS REMAINING:\n%d" % turn_controller.turns_remaining #th
-						
-						print("Match %d! Score: +%d (Total: %d)" % [match_size, full_points, score])
-					else:
-						print(" No match")
-				first_item = null
+					var board: Array = $LevelGenerator.board
+					board[a_pos.y][a_pos.x] = b
+					board[b_pos.y][b_pos.x] = a
 					
+					# Swap pos variables
+					a.pos = b_pos
+					b.pos = a_pos
+					
+					$LevelGenerator._rebuild_grid_children()
+					await $LevelGenerator.safe_wait_frame()
+					
+					# Find matches
+					var matches = $LevelGenerator.find_matches()
+					
+					if matches.size() > 0:
+						# Calculate score based on match sizes
+						var points = count_match(matches)
+						score += points
+						
+						print("Valid match! Earned %d points (Total: %d)" % [points, score])
+						
+						# Resolve board
+						await $LevelGenerator.resolve_board()
+					else:
+						print("Invalid swap - no match created")
+					
+					$LevelGenerator._rebuild_grid_children()
+					await $LevelGenerator.safe_wait_frame()
+					
+					# Decrease turn
+					turn_controller.finish_turn()
+					
+					# Update displays
+					score_label.text = "SCORE:\n%d" % score
+					turn_label.text = "TURNS REMAINING:\n%d" % turn_controller.turns_remaining
+					
+					await $LevelGenerator.safe_wait_frame()
+					$LevelGenerator.resolve_board()
+				
+			first_item = null
 						
 
 
@@ -117,108 +134,25 @@ func get_score(match_size: int) -> int:
 		5: return SCORE_5
 		_: return SCORE6PLUS
 
-func count_match(item: BoardItem) -> int:
+func count_match(matches: Array) -> int:
 	## Count how many tiles match at this poistions, and it will return the size
-	if item == null:
-		return 0
-	
-	##we will use row and 
-	var item_type = item.item_type
-	var row = int(item.pos.y)
-	var col = int(item.pos.x)
-	
-	
-	## Count the horizontol matchs
-	var horzi = 1
-	## we first count the left 
-	var check1 = col - 1
-	while check1 >= 0:	
-		var check_item = get_at_pos(row, check1)
-		if check_item != null and check_item.item_type == item_type:
-			horzi += 1
-			check1 -= 1
-		else:
-			break
-	## we then count the right	
-	check1 = col + 1
-	while check1 < grid_width:
-		var check_item = get_at_pos(row, check1)
-		if check_item != null and check_item.item_type == item_type:
-			horzi += 1
-			check1 += 1
-		else:
-			break
-			
+	var total_points = 0
+	# Each match in the array represents a group of matched tiles
+	for match in matches:
+		var match_size = 0
 		
-	
-	
-	## Count the horizontol matchs
-	var vert = 1
-	##  count the the top
-	var check2 = row - 1
-	while check2 >= 0:
-		var check_item = get_at_pos(check2, col)
-		if check_item != null and check_item.item_type == item_type:
-			vert += 1
-			check2 -= 1
+		# Figure out the size of this match
+		if match is Array:
+			match_size = match.size()
+		elif match is Dictionary and "tiles" in match:
+			match_size = match.tiles.size()
+		elif match is Dictionary and "size" in match:
+			match_size = match.size
 		else:
-			break
-	## count the matches down
-	check2 = row + 1 
-	while check2 < grid_height:
-		var check_item = get_at_pos(check2, col)
-		if check_item != null and check_item.item_type == item_type:
-			vert += 1
-			check2 += 1
-		else:
-			break
-		  
-			
-	 ## Returns the larger one		
-	return max(horzi, vert)
-	
-			
-func get_at_pos(row: int, col: int) -> BoardItem:
-	#Search through all direct children of BoardController
-	if level_generator.board.size() == 0:
-		return null
-	
-	var grid_height = level_generator.board.size()
-	var grid_width = level_generator.board[0].size()
-	
-	if row < 0 or row >= grid_height or col < 0 or col >= grid_width:
-		return null
-	
-	# Access the LevelGenerator's board array
-	return level_generator.board[row][col]
-
-func check_swap(item1: BoardItem, item2: BoardItem) -> int:
-	## Checks if swapping creates a match and returns the size 
-	## Returns 0 iff there isnt a match
-	if item1 == null or item2 == null:
-		return 0
-	
-	## temp swaps
-	var temp = item1.item_type
-	item1.item_type = item2.item_type
-	item2.item_type = temp
-	
-	## Check both positions
-	var match1 = count_match(item1)
-	var match2 = count_match(item2)
-	var largest = max(match1, match2)
-	
-	## this will Swap them back
-	temp = item1.item_type
-	item1.item_type = item2.item_type
-	item2.item_type = temp
-	
-	# Only return if >= 3
-	return largest if largest >= 3 else 0
-	
-	
-	
-	
-	
-	
-	
+			# Default to treating it as a 3-match if we can't determine
+			match_size = 3
+		
+		# Get points for this match size
+		var points = get_score(match_size)
+		total_points += points
+	return total_points
