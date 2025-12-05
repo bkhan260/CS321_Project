@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://bmwwquv5462ej"]
 
-[ext_resource type="Texture2D" uid="uid://306naxa3gmi2" path="res://Sprites/Ellipse.png" id="1_5b0ew"]
 [ext_resource type="Script" uid="uid://redy1phqust6" path="res://Scripts/board_item.gd" id="1_npdx3"]
-[ext_resource type="Texture2D" uid="uid://l24qm56tnc5l" path="res://Sprites/Polygon.png" id="2_6572y"]
-[ext_resource type="Texture2D" uid="uid://dks61kgewxaon" path="res://Sprites/Rectangle.png" id="3_npdx3"]
-[ext_resource type="Texture2D" uid="uid://7ekco37mhgco" path="res://Sprites/Triangle.png" id="4_ak7mi"]
+[ext_resource type="Texture2D" uid="uid://bywmxtcyqv8jt" path="res://Sprites/Fish Pack/PNG/Large/kenney_fish-pack_2/PNG/Default/fish_blue.png" id="2_npdx3"]
+[ext_resource type="Texture2D" uid="uid://854xp7f183he" path="res://Sprites/Fish Pack/PNG/Large/kenney_fish-pack_2/PNG/Default/fish_brown.png" id="3_ak7mi"]
+[ext_resource type="Texture2D" uid="uid://cyl6rredcb3ij" path="res://Sprites/Fish Pack/PNG/Large/kenney_fish-pack_2/PNG/Default/fish_green.png" id="4_6c1ob"]
+[ext_resource type="Texture2D" uid="uid://clvbdrlg0bcih" path="res://Sprites/Fish Pack/PNG/Large/kenney_fish-pack_2/PNG/Default/fish_orange.png" id="5_idbb8"]
 
 [node name="BoardItem" type="Control"]
 clip_contents = true
@@ -16,7 +16,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_npdx3")
 
-[node name="Ellipse" type="TextureRect" parent="."]
+[node name="BlueFish" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -24,11 +24,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("1_5b0ew")
+texture = ExtResource("2_npdx3")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="Polygon" type="TextureRect" parent="."]
+[node name="BrownFish" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -36,11 +36,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("2_6572y")
+texture = ExtResource("3_ak7mi")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="Rectangle" type="TextureRect" parent="."]
+[node name="GreenFish" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,11 +48,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("3_npdx3")
+texture = ExtResource("4_6c1ob")
 expand_mode = 3
 stretch_mode = 5
 
-[node name="Triangle" type="TextureRect" parent="."]
+[node name="OrangeFish" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -60,6 +60,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("4_ak7mi")
+texture = ExtResource("5_idbb8")
 expand_mode = 3
 stretch_mode = 5
